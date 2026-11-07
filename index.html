@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <!-- Sparkling Star Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&family=Fredoka:wght@400;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landing-view" class="view active">
+        <div class="video-container">
+            <video autoplay loop muted playsinline disablePictureInPicture disableRemotePlayback>
+                <source src="media/portrait.mp4" type="video/mp4">
+            </video>
+        </div>
+        <button id="open-btn" class="primary-btn">Wanna Check Inside</button>
+    </div>
+
+    <!-- Birthday Cake Page -->
+    <div id="cake-view" class="view hidden">
+        <button id="cake-back-btn" class="back-btn" aria-label="Go Back">
+            <svg viewBox="0 0 24 24" class="thick-arrow">
+                <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+        </button>
+
+        <div class="cake-content">
+            <h1 class="cake-title">Make a wish, Vaish!</h1>
+            <div class="cake-wrap" aria-label="A birthday cake with 20 candles">
+                <div class="cake-model-stage">
+                    <svg class="cake-sticker-art" viewBox="0 -50 420 410" role="img" aria-label="A colorful two-tier birthday cake sticker">
+                        <defs>
+                            <linearGradient id="cake-lower" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0" stop-color="#ff9bc2"/>
+                                <stop offset="1" stop-color="#ed568e"/>
+                            </linearGradient>
+                            <linearGradient id="cake-upper" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0" stop-color="#ffd1e1"/>
+                                <stop offset="1" stop-color="#ff9fbe"/>
+                            </linearGradient>
+                            <linearGradient id="cake-icing" x1="0" x2="0" y1="0" y2="1">
+                                <stop offset="0" stop-color="#fffdf7"/>
+                                <stop offset="1" stop-color="#ffe8ef"/>
+                            </linearGradient>
+                            <filter id="cake-shadow" x="-20%" y="-20%" width="140%" height="150%">
+                                <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#120c27" flood-opacity=".35"/>
+                            </filter>
+                        </defs>
+                        <g filter="url(#cake-shadow)" stroke="#fffaf4" stroke-linejoin="round" stroke-width="9">
+                            <path d="M56 185c0-22 69-40 154-40s154 18 154 40v94c0 23-69 42-154 42S56 302 56 279z" fill="url(#cake-lower)"/>
+                            <path d="M56 185c0 22 69 40 154 40s154-18 154-40-69-40-154-40-154 18-154 40z" fill="url(#cake-icing)"/>
+                            <path d="M56 191c0 18 16 21 24 6 8-14 22-13 30 1 9 15 24 14 31-1 8-17 24-17 33 0 8 15 23 16 31 1 9-16 24-15 32 1 8 15 24 15 32-1 9-16 25-16 33 0 8 15 23 14 31-1 9-16 28-14 31 1" fill="none" stroke="#ffd6e5" stroke-width="10"/>
+                            <path d="M115 112c0-17 42-31 95-31s95 14 95 31v59c0 18-42 33-95 33s-95-15-95-33z" fill="url(#cake-upper)"/>
+                            <path d="M115 112c0 17 42 31 95 31s95-14 95-31-42-31-95-31-95 14-95 31z" fill="url(#cake-icing)"/>
+                            <path d="M115 117c0 15 12 16 19 5 7-10 18-10 25 1 7 11 18 11 25-1 7-11 18-11 25 0 7 11 18 11 25 0 7-11 19-11 26 0 7 11 18 10 25-1" fill="none" stroke="#ffe0eb" stroke-width="8"/>
+                            <path d="M111 221c26 14 60 21 99 21s73-7 99-21" fill="none" stroke="#c93c78" stroke-linecap="round" stroke-width="7"/>
+                            <path d="M173 282c15 7 35 10 56 10" fill="none" stroke="#ffbad2" stroke-linecap="round" stroke-width="6"/>
+                        </g>
+                    </svg>
+                    <div class="cake-candles" id="cake-candles" aria-hidden="true"></div>
+                </div>
+            </div>
+            <h2 class="blow-prompt">fffuuuu the candles</h2>
+            <div class="cake-controls">
+                <button id="skip-cake-btn" class="cake-button cake-button-secondary" type="button">Skip</button>
+            </div>
+        </div>
+
+        <div id="confetti-layer" class="confetti-layer" aria-hidden="true"></div>
+
+        <div id="birthday-reveal" class="birthday-reveal" role="dialog" aria-modal="true" aria-labelledby="birthday-reveal-title">
+            <div class="birthday-reveal-card">
+                <button id="birthday-reveal-close-btn" class="birthday-reveal-close" type="button" aria-label="Close birthday wishes">×</button>
+                <div class="reveal-sparkle" aria-hidden="true">✦</div>
+                <p class="cake-eyebrow">Wish granted!</p>
+                <h2 id="birthday-reveal-title">Happy Birthday,<br><span>Vaish!</span></h2>
+                <p>You are as beautiful as your heart is 💖</p>
+                <p>May your day be as wonderful as you are ☺️</p>
+                <button id="birthday-reveal-btn" class="cake-button" type="button">Open your birthday surprises</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Birthday Surprises Page -->
+    <div id="celebration-view" class="view hidden">
+        <button id="back-btn" class="back-btn" aria-label="Go Back">
+            <svg viewBox="0 0 24 24" class="thick-arrow">
+                <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+        </button>
+
+        <div class="celebration-decorations">
+            <span class="decoration-heart heart-one" aria-hidden="true"><span class="heart-balloon"></span></span>
+            <span class="decoration-heart heart-two" aria-hidden="true"><span class="heart-balloon"></span></span>
+            <span class="decoration-heart heart-three" aria-hidden="true"><span class="heart-balloon"></span></span>
+            <span class="decoration-heart heart-four" aria-hidden="true"><span class="heart-balloon"></span></span>
+            <span class="decoration-heart heart-five" aria-hidden="true"><span class="heart-balloon"></span></span>
+            <span class="decoration-star star-one" aria-hidden="true"><span>★</span></span>
+            <span class="decoration-star star-two" aria-hidden="true"><span>★</span></span>
+            <span class="decoration-star star-three" aria-hidden="true"><span>★</span></span>
+        </div>
+
+        <h1 class="stylish-bday">Happy Birthday</h1>
+        <h2 class="simple-name">VAISH</h2>
+        
+        <!-- Interactive Menu -->
+        <div class="options-menu">
+            <button class="menu-btn" data-target="section-memories">Memories</button>
+            <button class="menu-btn active-tab" data-target="section-love">Love Meter</button>
+            <button class="menu-btn" data-target="section-card">Surprise Card</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-display">
+            
+            <!-- 1. Memories Section -->
+            <div id="section-memories" class="tab-content hidden-content">
+                
+                <!-- Cards Selection Menu with Image Slots -->
+                <div id="memories-menu" class="gallery">
+                    <div class="polaroid clickable" id="btn-yours">
+                        <div class="photo placeholder">
+                            <img src="media/yours_dp.png" alt="Yours Preview" class="card-bg-img" />
+                            <span class="camera-icon">📸</span>
+                        </div>
+                        <p>Yours</p>
+                    </div>
+                    <div class="polaroid clickable" id="btn-ours">
+                        <div class="photo placeholder">
+                            <img src="media/ours_dp.png" alt="Ours Preview" class="card-bg-img" />
+                            <span class="camera-icon">📸</span>
+                        </div>
+                        <p>Ours</p>
+                    </div>
+                </div>
+
+                <!-- Infinite Center-Focus Film Strip Viewer (Starts Hidden) -->
+                <div id="filmstrip-view" class="filmstrip-container is-hidden">
+                    
+                    <div class="filmstrip-track-wrapper">
+                        <!-- Top Sprockets -->
+                        <div class="filmstrip-sprockets"></div>
+                        
+                        <!-- Horizontal Track -->
+                        <div class="filmstrip-track" id="filmstrip-track">
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 01</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/1.jpg" alt="Yours Memory 1" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 02</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/2.jpg" alt="Yours Memory 2" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 03</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/3.jpg" alt="Yours Memory 3" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 04</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/4.jpg" alt="Yours Memory 4" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 05</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/5.jpg" alt="Yours Memory 5" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 06</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/6.jpg" alt="Yours Memory 6" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 07</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/7.jpg" alt="Yours Memory 7" />
+                                </div>
+                            </div>
+                            <div class="film-frame">
+                                <span class="frame-number">KODAK 400 • 08</span>
+                                <div class="photo-box">
+                                    <img src="media/yours/8.jpg" alt="Yours Memory 8" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Sprockets -->
+                        <div class="filmstrip-sprockets"></div>
+                    </div>
+
+                    <p class="fs-hint">Swipe or scroll horizontally to view 🎞️</p>
+
+                    <button id="fs-back-btn" class="fs-back-btn">← Back</button>
+                </div>
+
+            </div>
+
+            <!-- 2. Love Meter Section -->
+            <div id="section-love" class="tab-content active-content">
+                <div class="title-container">
+                    <h3 class="section-title">The Love Scanner</h3>
+                    <div class="vibrating-heart-wrapper" aria-hidden="true">
+                        <svg class="vibrating-heart" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <div class="sound-wave left-wave"></div>
+                        <div class="sound-wave right-wave"></div>
+                    </div>
+                </div>
+                <p class="section-desc">Enter a name to see how much they love you.</p>
+                <div class="input-group">
+                    <input type="text" id="love-input" placeholder="Enter a name..." spellcheck="false" autocomplete="off">
+                    <button id="calc-love-btn" class="action-btn">Scan</button>
+                </div>
+                <div id="love-result" class="result-text"></div>
+            </div>
+
+            <!-- 3. Surprise Card Section -->
+            <div id="section-card" class="tab-content hidden-content">
+
+                <div class="card-stage">
+                    <button id="card-prev" class="card-arrow" aria-label="Previous pictures">&#8249;</button>
+
+                    <div class="card-scene">
+                        <div class="card-tilt" id="card-tilt">
+                            <div class="card" id="card">
+                                <div class="card-cell cell-tl" id="cell-tl">
+                                    <div class="card-panel">
+                                        <span class="card-edge edge-top" aria-hidden="true"></span><span class="card-edge edge-right" aria-hidden="true"></span><span class="card-edge edge-bottom" aria-hidden="true"></span><span class="card-edge edge-left" aria-hidden="true"></span>
+                                        <div class="face face-front"></div><div class="face face-back"></div>
+                                    </div>
+                                </div>
+                                <div class="card-cell cell-tr" id="cell-tr">
+                                    <div class="card-panel">
+                                        <span class="card-edge edge-top" aria-hidden="true"></span><span class="card-edge edge-right" aria-hidden="true"></span><span class="card-edge edge-bottom" aria-hidden="true"></span><span class="card-edge edge-left" aria-hidden="true"></span>
+                                        <div class="face face-front"></div><div class="face face-back"></div>
+                                    </div>
+                                </div>
+                                <div class="card-cell cell-br" id="cell-br">
+                                    <div class="card-panel">
+                                        <span class="card-edge edge-top" aria-hidden="true"></span><span class="card-edge edge-right" aria-hidden="true"></span><span class="card-edge edge-bottom" aria-hidden="true"></span><span class="card-edge edge-left" aria-hidden="true"></span>
+                                        <div class="face face-front"></div><div class="face face-back"></div>
+                                    </div>
+                                </div>
+                                <div class="card-cell cell-bl axis-h" id="cell-bl">
+                                    <div class="card-panel">
+                                        <span class="card-edge edge-top" aria-hidden="true"></span><span class="card-edge edge-right" aria-hidden="true"></span><span class="card-edge edge-bottom" aria-hidden="true"></span><span class="card-edge edge-left" aria-hidden="true"></span>
+                                        <div class="face face-front"></div><div class="face face-back"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="card-next" class="card-arrow" aria-label="Next pictures">&#8250;</button>
+                </div>
+
+                <div class="card-dots" id="card-dots"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+</html>
