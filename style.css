@@ -640,25 +640,39 @@ video::-webkit-media-controls {
 /* Landing Page Button */
 .primary-btn {
     position: relative;
+    margin-top: 2rem;
     z-index: 20;
-    background-color: #df4cf5;
-    color: var(--primary-bg);
+    background: linear-gradient(135deg, #c8960c 0%, #f3cb70 50%, #d4af37 100%);
+    color: #06071f;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
-    letter-spacing: 1px;
-    border: none;
-    padding: 14px 35px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    border: 1px solid rgba(255, 238, 180, 0.65);
+    padding: 15px 38px;
     font-size: 1.1rem;
-    border-radius: 30px;
+    border-radius: 35px;
     cursor: pointer;
-    box-shadow: 0 0 25px rgba(223, 76, 245, 0.6);
-    transition: all 0.3s ease;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.45),
+        0 0 25px rgba(212, 175, 55, 0.45),
+        inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .primary-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 35px rgba(223, 76, 245, 0.8);
-    background-color: #ef5cff;
+    transform: translateY(-3px) scale(1.02);
+    background: linear-gradient(135deg, #d8a318 0%, #ffe085 50%, #e2be4a 100%);
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, 0.55),
+        0 0 35px rgba(243, 203, 112, 0.7),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.primary-btn:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(212, 175, 55, 0.4);
 }
 
 /* Back Button */
@@ -706,7 +720,7 @@ video::-webkit-media-controls {
 .simple-name {
     font-family: 'Montserrat', sans-serif;
     font-size: 3rem;
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 15px;
     color: #ffffff;
     margin-top: 10px;
@@ -715,7 +729,30 @@ video::-webkit-media-controls {
     display: flex;
     align-items: center;
     justify-content: center;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 0.95),
+        0 0 20px rgba(245, 213, 115, 0.85),
+        0 0 35px rgba(212, 175, 55, 0.7),
+        0 0 55px rgba(212, 175, 55, 0.45);
+    animation: name-glow 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes name-glow {
+    0% {
+        text-shadow:
+            0 0 8px rgba(255, 255, 255, 0.8),
+            0 0 18px rgba(245, 213, 115, 0.7),
+            0 0 30px rgba(212, 175, 55, 0.5),
+            0 0 45px rgba(212, 175, 55, 0.35);
+    }
+    100% {
+        text-shadow:
+            0 0 12px rgba(255, 255, 255, 1),
+            0 0 26px rgba(255, 235, 150, 0.95),
+            0 0 45px rgba(212, 175, 55, 0.85),
+            0 0 70px rgba(212, 175, 55, 0.6),
+            0 0 95px rgba(212, 175, 55, 0.35);
+    }
 }
 
 .simple-name::before,
@@ -725,8 +762,8 @@ video::-webkit-media-controls {
     height: 2px;
     width: 80px;
     background-color: var(--accent);
-    opacity: 0.6;
-    box-shadow: 0 0 8px var(--accent);
+    opacity: 0.85;
+    box-shadow: 0 0 12px var(--accent), 0 0 20px rgba(212, 175, 55, 0.5);
 }
 
 .simple-name::before { margin-right: 20px; }
@@ -861,9 +898,9 @@ video::-webkit-media-controls {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit:contain;
     filter: blur(0.2px) brightness(0.8);
-    transform: scale(1.08); /* Prevents blurred edges from showing white gaps */
+    transform: scale(1.12); /* Prevents blurred edges from showing white gaps */
     transition: filter 0.3s ease, transform 0.3s ease;
     z-index: 1;
 }
@@ -1006,10 +1043,24 @@ video::-webkit-media-controls {
     background: #000;
 }
 
-.photo-box img {
+.photo-box img,
+.photo-box video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+}
+
+.photo-box video {
+    cursor: pointer;
+}
+.photo-box video::-webkit-media-controls,
+.photo-box video::-webkit-media-controls-panel,
+.photo-box video::-webkit-media-controls-play-button,
+.photo-box video::-webkit-media-controls-start-playback-button,
+.photo-box video::-webkit-media-controls-enclosure {
+    display: none !important;
+    -webkit-appearance: none;
 }
 
 .fs-hint {
@@ -1022,8 +1073,9 @@ video::-webkit-media-controls {
 .section-title {
     font-family: 'Fredoka', sans-serif;
     color: #df4cf5;
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+    font-size: 3rem;
+    margin-bottom: 30px;
+    margin-top: 20px;
     font-weight: 600;
     letter-spacing: 2px;
     text-shadow: 0 0 15px rgba(223, 76, 245, 0.4);
@@ -1309,6 +1361,7 @@ video::-webkit-media-controls {
 
 .cake-content {
     position: relative;
+    margin-top: 1rem;
     z-index: 2;
     width: min(100%, 560px);
     padding: 18px 0;
@@ -1339,6 +1392,7 @@ video::-webkit-media-controls {
     align-items: center;
     justify-content: center;
     margin: 0 auto;
+    margin-top: 1rem;
 }
 
 .cake-model-stage {
@@ -1519,7 +1573,7 @@ video::-webkit-media-controls {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: 72px;
+    margin-top: 90px;
 }
 
 .cake-button {
@@ -1746,7 +1800,7 @@ video::-webkit-media-controls {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .cake, .candle-flame, .reveal-sparkle, .confetti-piece {
+    .cake, .candle-flame, .reveal-sparkle, .confetti-piece, .simple-name {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
     }

@@ -1036,7 +1036,6 @@ document.addEventListener('DOMContentLoaded', () => {
             piece.style.setProperty('--confetti-fall-distance', `${fallDistance}vh`);
             piece.style.setProperty('--confetti-wobble', `${Math.random() * 12 - 6}vw`);
             piece.style.setProperty('--confetti-spin-end', `${spinEnd}deg`);
-            piece.style.setProperty('--confetti-spin-end', `${spinEnd}deg`);
             piece.style.setProperty('--confetti-delay', '0s');
             piece.style.setProperty('--confetti-color', colors[Math.floor(Math.random() * colors.length)]);
             piece.addEventListener('animationend', () => piece.remove(), { once: true });
@@ -1239,9 +1238,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cakeBackBtn) {
         cakeBackBtn.addEventListener('click', () => {
-        cakeActive = false;
-        stopMicrophone();
-        cakeView.classList.remove('active');
+            cakeActive = false;
+            stopMicrophone();
+            cakeView.classList.remove('active');
             cakeView.classList.add('hidden');
             landingView.classList.remove('hidden');
             landingView.classList.add('active');
@@ -1273,6 +1272,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     menuBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            // Stop any film-reel video that is still playing
+            pauseFilmVideos();
+
+            // Close any open maximized views when switching tabs
+            if (filmstripView && filmstripView.classList.contains('is-maximized')) {
+                filmstripView.classList.remove('is-maximized');
+                const fsLabel = fsMaximizeBtn ? fsMaximizeBtn.querySelector('.btn-label') : null;
+                if (fsLabel) fsLabel.textContent = 'Maximize';
+            }
+            if (typeof toggleCardMaximize === 'function') {
+                toggleCardMaximize(false);
+            }
+
             menuBtns.forEach(b => b.classList.remove('active-tab'));
             tabContents.forEach(tc => {
                 tc.classList.remove('active-content');
@@ -1296,6 +1308,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const memoriesMenu = document.getElementById('memories-menu');
     const filmstripView = document.getElementById('filmstrip-view');
     const fsBackBtn = document.getElementById('fs-back-btn');
+    const fsMaximizeBtn = document.getElementById('fs-maximize-btn');
+    const fsPrevBtn = document.getElementById('fs-prev-btn');
+    const fsNextBtn = document.getElementById('fs-next-btn');
     const filmstripTrack = document.getElementById('filmstrip-track');
 
     // Save original Yours HTML before any JS touches it
@@ -1309,7 +1324,53 @@ document.addEventListener('DOMContentLoaded', () => {
         { n: '05', src: 'media/ours/5.jpg', alt: 'Ours Memory 5' },
         { n: '06', src: 'media/ours/6.jpg', alt: 'Ours Memory 6' },
         { n: '07', src: 'media/ours/7.jpg', alt: 'Ours Memory 7' },
+        { n: '08', src: 'media/ours/8.mp4', alt: 'Ours Memory 8' }
     ];
+
+    // ---- Photo vs. video rendering ----
+    const isVideo = src => /\.(mp4|webm|mov)$/i.test(src);
+    const mediaHTML = f => isVideo(f.src)
+        ? `<video src="${f.src}" loop playsinline preload="metadata"
+                disablePictureInPicture
+                controlsList="nodownload nofullscreen noremoteplayback"
+                aria-label="${f.alt}"></video>`
+        : `<img src="${f.src}" alt="${f.alt}" />`;
+
+    // ---- Pause every video in the reel ----
+    function pauseFilmVideos() {
+        if (!filmstripTrack) return;
+        filmstripTrack.querySelectorAll('video').forEach(v => v.pause());
+    }
+
+    function playFilmVideo(v) {
+        v.muted = false;
+        v.play().catch(() => {
+            // Browser blocked unmuted autoplay: fall back to muted playback
+            v.muted = true;
+            v.play().catch(() => {});
+        });
+    }
+
+    if (filmstripTrack) {
+        filmstripTrack.addEventListener('click', e => {
+            const v = e.target.closest('video');
+            if (!v) return;
+            const frame = v.closest('.film-frame');
+            if (!frame || !frame.classList.contains('active-frame')) return;
+
+            // If the browser forced muted playback, the first click restores sound
+            if (v.muted && !v.paused) { v.muted = false; return; }
+
+            if (v.paused) {
+                v.dataset.userPaused = '';
+                v.muted = false;
+                v.play().catch(() => {});
+            } else {
+                v.dataset.userPaused = '1';
+                v.pause();
+            }
+        });
+    }
 
     // ---- Highlight the frame closest to the viewport centre ----
     function updateActiveFrame() {
@@ -1329,6 +1390,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         frames.forEach(f => f.classList.remove('active-frame'));
         if (centerFrame) centerFrame.classList.add('active-frame');
+
+        // Play the video in the centred frame only; pause all the others
+        frames.forEach(f => {
+            const v = f.querySelector('video');
+            if (!v) return;
+            if (f === centerFrame) {
+                if (v.paused && v.dataset.userPaused !== '1') playFilmVideo(v);
+            } else {
+                if (!v.paused) v.pause();
+                v.dataset.userPaused = '';   // reset when it leaves the center
+            }
+        });
     }
 
     // ---- Silently jump back to the middle copy of the triplicated track ----
@@ -1402,16 +1475,53 @@ document.addEventListener('DOMContentLoaded', () => {
             filmstripTrack.innerHTML = oursFrames.map(f =>
                 `<div class="film-frame">
                     <span class="frame-number">KODAK 400 • ${f.n}</span>
-                    <div class="photo-box"><img src="${f.src}" alt="${f.alt}" /></div>
+                    <div class="photo-box">${mediaHTML(f)}</div>
                 </div>`
             ).join('');
             openFilmstrip();
         });
     }
 
+    // ---- Filmstrip Maximize Button ----
+    if (fsMaximizeBtn && filmstripView) {
+        fsMaximizeBtn.addEventListener('click', () => {
+            const isMax = filmstripView.classList.toggle('is-maximized');
+            const label = fsMaximizeBtn.querySelector('.btn-label');
+            if (label) label.textContent = isMax ? 'Minimize' : 'Maximize';
+            setTimeout(() => {
+                updateActiveFrame();
+            }, 80);
+        });
+    }
+
+    // ---- Filmstrip Navigation Arrows ----
+    if (fsNextBtn && filmstripTrack) {
+        fsNextBtn.addEventListener('click', () => {
+            const frame = filmstripTrack.querySelector('.film-frame');
+            const step = frame ? frame.offsetWidth + 26 : 280;
+            filmstripTrack.scrollBy({ left: step, behavior: 'smooth' });
+        });
+    }
+
+    if (fsPrevBtn && filmstripTrack) {
+        fsPrevBtn.addEventListener('click', () => {
+            const frame = filmstripTrack.querySelector('.film-frame');
+            const step = frame ? frame.offsetWidth + 26 : 280;
+            filmstripTrack.scrollBy({ left: -step, behavior: 'smooth' });
+        });
+    }
+
     // ---- Back button ----
     if (fsBackBtn) {
         fsBackBtn.addEventListener('click', () => {
+            if (filmstripView.classList.contains('is-maximized')) {
+                filmstripView.classList.remove('is-maximized');
+                const label = fsMaximizeBtn ? fsMaximizeBtn.querySelector('.btn-label') : null;
+                if (label) label.textContent = 'Maximize';
+                setTimeout(updateActiveFrame, 80);
+                return;
+            }
+            pauseFilmVideos();
             filmstripView.classList.add('is-hidden');
             memoriesMenu.classList.remove('is-hidden');
         });
@@ -1453,6 +1563,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = loveInput.value;
 
         if (name === '') {
+            lastScannedName = "";
             loveResult.textContent = 'Please enter a name!';
             return;
         }
@@ -1462,10 +1573,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let minRange, maxRange;
 
         if (name === 'shiva' || name === 'shivateja') {
-            minRange = 82; maxRange = 94;
+            minRange = 87; maxRange = 96;
         } else if (name === 'pinky' || name === 'vaish' || name === 'vaishu' || name === 'vaishnavi') {
-            minRange = 94; maxRange = 99;
-            
+            minRange = 93; maxRange = 98;
+
         } else {
             if (nameMemory[name] !== undefined) {
                 minRange = nameMemory[name];
@@ -1587,9 +1698,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const unfoldAngle = progress > 0.5 ? 90 * ease(phase) : 0;
         const stack = Math.sin(Math.PI * progress);
 
-        // NEW: Continuous mathematical depth offset. 
-        // Math.pow(progress, 4) creates a beautiful curve that allows the card to 
-        // push backwards naturally, then smoothly and slowly zoom forward to 0 
+        // Continuous mathematical depth offset.
+        // Math.pow(progress, 4) creates a curve that allows the card to
+        // push backwards naturally, then smoothly and slowly zoom forward to 0
         // without any snaps in BOTH directions.
         const s = cells.tl.offsetWidth;
         const zOffset = s * Math.pow(progress, 4);
@@ -1683,4 +1794,59 @@ document.addEventListener('DOMContentLoaded', () => {
     paint(0);
     pose(0, 'vertical');
     updateUI();
+
+    // ---------- 4. SURPRISE CARD MAXIMIZE ----------
+    const cardSection = document.getElementById('section-card');
+    const cardMaximizeBtn = document.getElementById('card-maximize-btn');
+    const cardMaxBackBtn = document.getElementById('card-max-back-btn');
+
+    function toggleCardMaximize(forceState) {
+        if (!cardSection) return;
+        const willMaximize = typeof forceState === 'boolean'
+            ? forceState
+            : !cardSection.classList.contains('is-maximized');
+
+        cardSection.classList.toggle('is-maximized', willMaximize);
+        const label = cardMaximizeBtn ? cardMaximizeBtn.querySelector('.btn-label') : null;
+        if (label) label.textContent = willMaximize ? 'Minimize' : 'Maximize';
+
+        requestAnimationFrame(() => {
+            pose(0, 'vertical');
+        });
+    }
+
+    if (cardMaximizeBtn) {
+        cardMaximizeBtn.addEventListener('click', () => toggleCardMaximize());
+    }
+
+    if (cardMaxBackBtn) {
+        cardMaxBackBtn.addEventListener('click', () => toggleCardMaximize(false));
+    }
+
+    // ---------- 5. GLOBAL KEYBOARD NAVIGATION FOR MAXIMIZED MODES ----------
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (filmstripView && filmstripView.classList.contains('is-maximized')) {
+                filmstripView.classList.remove('is-maximized');
+                const label = fsMaximizeBtn ? fsMaximizeBtn.querySelector('.btn-label') : null;
+                if (label) label.textContent = 'Maximize';
+                setTimeout(updateActiveFrame, 80);
+            }
+            if (cardSection && cardSection.classList.contains('is-maximized')) {
+                toggleCardMaximize(false);
+            }
+        } else if (e.key === 'ArrowLeft') {
+            if (cardSection && cardSection.classList.contains('is-maximized')) {
+                go(-1);
+            } else if (filmstripView && filmstripView.classList.contains('is-maximized')) {
+                if (fsPrevBtn) fsPrevBtn.click();
+            }
+        } else if (e.key === 'ArrowRight') {
+            if (cardSection && cardSection.classList.contains('is-maximized')) {
+                go(1);
+            } else if (filmstripView && filmstripView.classList.contains('is-maximized')) {
+                if (fsNextBtn) fsNextBtn.click();
+            }
+        }
+    });
 });
